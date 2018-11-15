@@ -9,9 +9,9 @@ Also, complete the `SetIterator`, as described in section 7.5, for your `HashTab
 - Data field `lastItemReturned` keeps track of the index of the last item returned by `next()`; this is used by the `remove()` method
 - The `remove()` method removes the last item returned by the `next()` method from the Set. It may only be called once for each call to `next()`
 
-Provide at least one JUnit test for each method that thoroughly test the methods functionality (i.e. `isEmpty()` for true and false, `put()` where a key/value pair exists and doesn't, etc.).  This also includes test to verify that `SetIterator` works.
+JUnit tests have been provided for each method to thoroughly test the methods' functionality.  This also includes test to verify that `SetIterator` works.
 
 > ***NOTE:***
 > - Reading the book helps! Ch. 7 has a lot of information and code on hash tables and the parts required above!
-> - Work with a small example (integers work well since the hashing function is straightforward, ~5 entries, make sure you have a couple collisions).  Draw out exactly what the hash table (chaining) should look like before you begin writing code.  Again, it will ensure you understand what the data structure should look like when built, and be a great check as you build the methods.
-> - Strategic development is always key, plan the project first to identify which parts are key to the functionality of the data structure.  Build the JUnit tests as you go, but writing them before creating the method will ensure you understand the purpose/results of the method you're about to implement.
+> - Work with a small example (integers work well since the hashing function is straightforward, ~5 entries, make sure you have a couple collisions). Draw out exactly what the hash table (chaining) should look like before you begin writing code. Again, it will ensure you understand what the data structure should look like when built, and be a great check as you build the methods.
+> - Strategic development is essential; plan the project first to identify which parts are key to the functionality of the data structure. Review the JUnit tests to ensure you understand the purpose/results of the method you're about to implement.
