@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * HashTableChain : Tester class for a hash table implementation which utilizes chaining. As a class which extends
+ * HashTableChainTest : Tester class for a hash table implementation which utilizes chaining. As a class which extends
  * Java's Map, HashTableChain will be assessed for its functionality through its implementation of this interface.
  *
  * @author King
