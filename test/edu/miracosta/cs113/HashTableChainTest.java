@@ -132,7 +132,7 @@ public class HashTableChainTest {
                 setString.equals(expectedSets[2]) || setString.equals(expectedSets[3]) ||
                 setString.equals(expectedSets[4]) || setString.equals(expectedSets[5]);
 
-        assertTrue("Test entrySet failed - invalid value returned by Set's toString: " + setString, validSet);
+        assertTrue("Test keySet failed - invalid value returned by Set's toString: " + setString, validSet);
     }
 
     @Test
