@@ -149,7 +149,7 @@ public class HashTableChainTest {
     }
 
     @Test
-    public void assertEqualsFalse() {
+    public void testEqualsFalse() {
         populateMapWithPut(30);
 
         Map<String, Integer> other = new Hashtable<String, Integer>();
@@ -177,17 +177,12 @@ public class HashTableChainTest {
     @Test
     public void testHashCode() {
         // Returns the hash code value for this map.
-        populateMapWithPut(304);
+        hashTable.put("one", 1);
 
         Map<String, Integer> other = new Hashtable<String, Integer>();
-        for (int i = 0; i < 304; i ++) {
-            other.put(Integer.toString(i), i);
-        }
+        other.put("one", 1);
 
-        for (int i = 0; i < 304; i ++) {
-            assertEquals("Test hashCode failed - expected and actual values do not match.",
-                        other.hashCode(), hashTable.hashCode());
-        }
+        assertEquals(other.hashCode(), hashTable.hashCode());
     }
 
     @Test
@@ -235,7 +230,7 @@ public class HashTableChainTest {
         // Add 40 additional elements
         populateMapWithPut(263);
         addDuplicateValues(40);
-        assertEquals("Test size 4 failed - invalid number of entires.", 303, hashTable.size());
+        assertEquals("Test size 4 failed - invalid number of entries.", 303, hashTable.size());
     }
 
     @Test
@@ -248,5 +243,10 @@ public class HashTableChainTest {
     }
 
     // endregion Map tests
+    // region SetIterator tests
+
+    // TODO: "
+
+    // endregion SetIterator tests
 
 } // End of class HashTableChainTest
