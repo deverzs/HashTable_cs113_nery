@@ -6,7 +6,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
 
     private LinkedList<Entry<K, V>>[] table ;
     private  int numKeys ;
-    private static final int CAPACITY = 10 ;
+    private static final int CAPACITY = 350 ;
     private static final double LOAD_THRESHOLD = 3.0 ;
 
     ///////////// ENTRY CLASS ///////////////////////////////////////
@@ -58,7 +58,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         }
         @Override
         public String toString() {
-            return " " + key + "=" + value  ;
+            return  key + "=" + value  ;
         }
 
 
@@ -69,7 +69,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
 
     ////////////// EntrySet Class //////////////////////////////////
 
-    private class EntrySet<K, V> extends AbstractSet<Map.Entry<K, V>> {
+    private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
 
 
         @Override
@@ -91,50 +91,51 @@ public class HashTableChain<K, V> implements Map<K, V>  {
      * Class that iterates over the table. Index is key
      * and lastItemReturned is value
      */
-    private class SetIterator implements Iterator {
+    private class SetIterator implements Iterator<Map.Entry<K, V>> {
 
-        private int index  ;
-        private  int lastItemReturned ;
+        private int index = 0 ;
+        private  Entry<K,V> lastItemReturned = null;
+        private Iterator<Entry<K, V>> iter = null;
 
-        public  SetIterator() {
-            index = 0 ;
-            lastItemReturned = -1 ;
 
-        }
 
         @Override
         public boolean hasNext() {
-           // if (Map.Entry. != null )
-            if (numKeys > index) {
-                return true ;
-            } else {
-                return false ;
-            }
+           if (iter !=null && iter.hasNext()) {
+               return true;
+           }
+           System.out.println("index is: " + index);
+          do {
+               index++ ;
+               if (index >= table.length) {
+                   return false ;
+               }
+           }   while (table[index] == null) ;
+           iter = table[index].iterator() ;
+           return iter.hasNext() ;
+
 
         }
 
         @Override
         public Map.Entry<K, V> next() {
-            index = 0 ;
-            // find index we are at
-            for (int i = 0 ; i < table.length ; i++) {
-                if (table[i] == null) {
-                    i++ ;
-                } else {
-                    for (Entry<K, V> nextItem : table[i]) {
-                        if (index == lastItemReturned + 1 && hasNext()) {
-                            lastItemReturned++ ;
-                            System.out.println("next Item is: " + nextItem);
-                            return  nextItem;
-                        }
-                        else {
-                            if (hasNext())
-                            index++ ;
-                        }
-                    }
-                }
+            if (iter.hasNext()) {
+                lastItemReturned = iter.next() ;
+                System.out.println("Last item returned: " + lastItemReturned);
+                return  lastItemReturned ;
+            } else {
+                return null ;
             }
-            return null ;
+
+        }
+
+        public void remove() {
+            if (lastItemReturned == null) {
+                throw new IllegalStateException() ;
+            } else {
+                iter.remove();
+                lastItemReturned = null ;
+            }
         }
     }
 
@@ -186,7 +187,6 @@ public class HashTableChain<K, V> implements Map<K, V>  {
             else {
                 for (Entry<K, V> nextItem : table[i]) {
                     if (nextItem.value.equals(value)) {
-                        System.out.println("value is true, containsValue " + value.toString());
                         return true;
                     }
                 }
@@ -237,6 +237,21 @@ public class HashTableChain<K, V> implements Map<K, V>  {
     }
 
     private void rehash() {
+        System.out.println("size before rehash: " + size());
+        int newSize = table.length * 2 + 1;
+        LinkedList<Entry<K, V>>[]  oldTable =  table ;
+        table = new LinkedList[newSize] ;
+        System.out.println("size after rehash: " + size());
+        numKeys = 0 ;
+        for (int i = 0 ; i < oldTable.length ; i++ ) {
+            if (oldTable[i] != null) {
+                for (Entry<K, V> nextItem : oldTable[i]) {
+                    put(nextItem.key, nextItem.value) ;
+                    numKeys++ ;
+                }
+            }
+        }
+        System.out.println("size BEFORE end: " + size());
     }
 
     @Override
@@ -246,36 +261,49 @@ public class HashTableChain<K, V> implements Map<K, V>  {
            index += table.length ;
        }
        if (table[index] == null) {
-           table[index] = new LinkedList<Entry<K,V>>() ;
+           return  null ;
        }
         for (Entry<K, V> nextItem : table[index]) {
             if (nextItem.key.equals(key)) {
-                table[index].removeFirstOccurrence(nextItem) ;
+                table[index].remove(nextItem) ;
                 numKeys-- ;
                 V oldVal = nextItem.value ;
+                if (table[index].isEmpty()) {
+                    table[index] = null ;
+                }
                 return oldVal ;
             }
         }
-        if (table[index].isEmpty()) {
-            table[index] = null ;
-        }
+
         return  null ;
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        // stub out
+        throw new UnsupportedOperationException() ;
     }
 
     @Override
     public void clear() {
-        table = new LinkedList[CAPACITY] ;
+        for (int i = 0 ; i < table.length ; i++) {
+            table[i] = null ;
+        }
         numKeys = 0 ;
     }
 
     @Override
     public Set<K> keySet() {
-        return null;
+        Set<K> set = new HashSet<>(size()) ;
+        for (int i = 0 ; i < table.length ; i++) {
+            if (table[i] != null) {
+                for (Entry<K, V> nextItem : table[i]) {
+                    if (nextItem != null) {
+                        set.add(nextItem.key);
+                    }
+                }
+            }
+        }
+        return set ;
     }
 
     @Override
@@ -287,9 +315,9 @@ public class HashTableChain<K, V> implements Map<K, V>  {
 
     @Override
     public Set<Map.Entry<K, V>> entrySet() {
-        Set<Map.Entry<K, V>> temp = new EntrySet<>();
+         return  new EntrySet();
 
-        return temp ;
+
     }
 
     public boolean equals(Object o) {
@@ -303,9 +331,12 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         Map anotherMap = (Map) o ;
         if (size() != anotherMap.size()) {
             return false ;  }
-
-
-        return true ;
+        //if (this.table)
+        Set<K> thisOne = keySet() ;
+        Set<K> thatOne = ((Map) o).keySet() ;
+        if (thisOne.equals(thatOne))
+            return true ;
+        return false ;
 
     }
 
