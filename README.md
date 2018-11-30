@@ -1,6 +1,8 @@
 # CS113-HW10-HashTable
 ## HW #10 for CS113 - HashTableChain w/ Map
 
+[![Build Status](https://travis-ci.com/MiraCostaCS-Nery/cs113-hw10-hashtable-deverzs.svg?token=ZAzHRsZG2pX38hWavrqj&branch=master)](https://travis-ci.com/MiraCostaCS-Nery/cs113-hw10-hashtable-deverzs)
+
 Complete the `HashTableChain` from lecture/book (Section 7.4) so that it fully implements the [`java.util.Map`](https://docs.oracle.com/javase/7/docs/api/java/util/Map.html) interface (you may only omit/stub out the `putAll()` and `values()` methods, all other methods must be implemented).
 
 Also, complete the `SetIterator`, as described in section 7.5, for your `HashTableChain`.  This will required creating the class `EntrySet`, both of which will help you create the `entrySet()` method in the `Map` interface.  The `SetIterator` should behave as [iterators](https://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html) do:
