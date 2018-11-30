@@ -2,11 +2,16 @@ package edu.miracosta.cs113;
 
 import java.util.*;
 
+/**
+ * HashTable implementation using chaining to tack a pair of key and value pairs.
+ * @param <K> Generic Key
+ * @param <V> Generic Value
+ */
 public class HashTableChain<K, V> implements Map<K, V>  {
 
     private LinkedList<Entry<K, V>>[] table ;
     private  int numKeys ;
-    private static final int CAPACITY = 350 ;
+    private static final int CAPACITY = 101 ;
     private static final double LOAD_THRESHOLD = 3.0 ;
 
     ///////////// ENTRY CLASS ///////////////////////////////////////
@@ -69,6 +74,9 @@ public class HashTableChain<K, V> implements Map<K, V>  {
 
     ////////////// EntrySet Class //////////////////////////////////
 
+    /**
+     * Inner class to implement set view
+     */
     private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
 
 
@@ -88,23 +96,22 @@ public class HashTableChain<K, V> implements Map<K, V>  {
     //////////////   SetIterator Class ////////////////////////////
 
     /**
-     * Class that iterates over the table. Index is key
-     * and lastItemReturned is value
+     * Class that iterates over the table. Index is table location
+     * and lastItemReturned is entry
      */
     private class SetIterator implements Iterator<Map.Entry<K, V>> {
 
         private int index = 0 ;
         private  Entry<K,V> lastItemReturned = null;
+        // Since I am implementing Iterator and since the for loops
+        // code in the book is also an Iterator, I am using an Iterator, too
         private Iterator<Entry<K, V>> iter = null;
-
-
 
         @Override
         public boolean hasNext() {
            if (iter !=null && iter.hasNext()) {
                return true;
            }
-           System.out.println("index is: " + index);
           do {
                index++ ;
                if (index >= table.length) {
@@ -113,22 +120,19 @@ public class HashTableChain<K, V> implements Map<K, V>  {
            }   while (table[index] == null) ;
            iter = table[index].iterator() ;
            return iter.hasNext() ;
-
-
         }
 
         @Override
         public Map.Entry<K, V> next() {
             if (iter.hasNext()) {
                 lastItemReturned = iter.next() ;
-                System.out.println("Last item returned: " + lastItemReturned);
                 return  lastItemReturned ;
             } else {
                 return null ;
             }
-
         }
 
+        @Override
         public void remove() {
             if (lastItemReturned == null) {
                 throw new IllegalStateException() ;
@@ -141,16 +145,20 @@ public class HashTableChain<K, V> implements Map<K, V>  {
 
     ////////////// end SetIterator Class ////////////////////////////
 
+    /**
+     * Default constructor, sets the table to initial capacity size
+     */
     public HashTableChain() {
         table = new LinkedList[CAPACITY] ;
     }
 
-
+    // returns number of keys
     @Override
     public int size() {
         return numKeys;
     }
 
+    // returns boolean if table has no keys
     @Override
     public boolean isEmpty() {
         if (numKeys > 0) {
@@ -161,6 +169,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         }
     }
 
+    // returns boolean if table has the searched for key
     @Override
     public boolean containsKey(Object key) {
         int index = key.hashCode() % table.length ;
@@ -178,9 +187,10 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         return false;
     }
 
+    // returns boolean if table has the searched for value
     @Override
     public boolean containsValue(Object value) {
-        for (int i = 0 ; i < CAPACITY ; i++) {
+        for (int i = 0 ; i < table.length ; i++) {
             if (table[i] == null) {
                 i++ ;
             }
@@ -195,6 +205,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         return false;
     }
 
+    // returns Value if table has the searched for key
     @Override
     public V get(Object key) {
         int index = key.hashCode() % table.length ;
@@ -212,6 +223,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         return null;
     }
 
+    // adds the key and value pair to the table using hashing
     @Override
     public V put(K key, V value) {
         int index = key.hashCode() % table.length ;
@@ -228,32 +240,59 @@ public class HashTableChain<K, V> implements Map<K, V>  {
                 return oldVal ;
             }
         }
+        // adding to the first location the Entry
         table[index].addFirst(new Entry<K, V>(key, value));
         numKeys++ ;
+
+        // rehash called
         if (numKeys > (LOAD_THRESHOLD * table.length)) {
             rehash() ;
         }
         return null;
     }
 
+
+    /**
+     * Resizes the table to be 2X +1 bigger than previous
+     */
     private void rehash() {
-        System.out.println("size before rehash: " + size());
+        // new size
         int newSize = table.length * 2 + 1;
+
+        // copy the old table
         LinkedList<Entry<K, V>>[]  oldTable =  table ;
+
+        // assign a new table to the previous table field
         table = new LinkedList[newSize] ;
-        System.out.println("size after rehash: " + size());
         numKeys = 0 ;
+
+        // copying over the table, making sure to add using hashing
         for (int i = 0 ; i < oldTable.length ; i++ ) {
             if (oldTable[i] != null) {
                 for (Entry<K, V> nextItem : oldTable[i]) {
                     put(nextItem.key, nextItem.value) ;
-                    numKeys++ ;
                 }
             }
         }
-        System.out.println("size BEFORE end: " + size());
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder() ;
+        for (int i = 0 ; i < table.length ; i++ ) {
+            if (table[i] != null) {
+                for (Entry<K, V> nextItem : table[i]) {
+                    sb.append(nextItem.toString() + " ") ;
+                }
+                sb.append(" ");
+            }
+        }
+        return sb.toString() ;
+
+    }
+
+    // remove an entry at the key location
+    // return removed value
     @Override
     public V remove(Object key) {
        int index  = key.hashCode() % table.length ;
@@ -278,11 +317,13 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         return  null ;
     }
 
+    // throws UnsupportedOperationException
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         throw new UnsupportedOperationException() ;
     }
 
+    // empties the table
     @Override
     public void clear() {
         for (int i = 0 ; i < table.length ; i++) {
@@ -291,6 +332,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         numKeys = 0 ;
     }
 
+    // returns a view of the keys in set view
     @Override
     public Set<K> keySet() {
         Set<K> set = new HashSet<>(size()) ;
@@ -306,13 +348,14 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         return set ;
     }
 
+    // throws UnsupportedOperationException
     @Override
     public Collection<V> values() {
-        // stub out
-        return null;
+        throw new UnsupportedOperationException() ;
     }
 
 
+    // returns a set view of the hash table
     @Override
     public Set<Map.Entry<K, V>> entrySet() {
          return  new EntrySet();
@@ -320,6 +363,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
 
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null ) {
             return false ;
