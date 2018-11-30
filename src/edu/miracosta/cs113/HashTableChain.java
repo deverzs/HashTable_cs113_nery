@@ -135,7 +135,7 @@ public class HashTableChain<K, V> implements Map<K, V>  {
         @Override
         public void remove() {
             if (lastItemReturned == null) {
-                throw new IllegalStateException() ;
+                throw new NoSuchElementException() ;
             } else {
                 iter.remove();
                 lastItemReturned = null ;
